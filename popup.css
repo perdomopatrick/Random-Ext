@@ -1,0 +1,92 @@
+body {
+    font-family: Arial, sans-serif;
+    width: 250px;
+    padding: 5px;
+    padding-top: 0px;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+}
+
+.tabs {
+    display: flex;
+    justify-content: space-around; 
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.tab {
+    flex: 1; 
+    padding: 5px;
+    background-color: rgb(0, 100, 255);
+    color: white;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 3px;
+}
+
+.tab.active {
+    background-color: rgb(0, 50, 200);
+}
+
+.tab-content {
+    display: none;
+    width: 100%; 
+}
+
+.tab-content.active {
+    display: block;
+}
+
+input {
+    width: 100%; 
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-sizing: border-box; 
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+    appearance: textfield;          
+    -webkit-appearance: none;       
+}
+
+select {
+    width: 100%; 
+    padding: 7px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-sizing: border-box; 
+}
+
+button {
+    width: 100%; 
+    padding: 8px; 
+    background-color: rgb(0, 200, 50);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: rgb(0, 150, 55);
+}
+
+p {
+    color: red;
+    margin-top: 5px;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+    font-weight: bold;
+    text-align: center;
+}

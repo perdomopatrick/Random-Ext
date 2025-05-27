@@ -1,0 +1,10 @@
+{
+    "manifest_version": 3,
+    "name": "Groceries Extension",
+    "version": "1.0",
+    "description": "groceries calculator",
+    "permissions": [],
+    "action": {
+      "default_popup": "popup.html"
+    }
+  }
