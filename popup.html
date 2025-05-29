@@ -1,18 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="popup.css">
     <title>Unit Converter</title>
 </head>
+
 <body>
     <div class="tabs">
-        <button class="tab active" data-tab="discount">Discount Calculator</button>
-        <button class="tab" data-tab="lbsToKg">Weight Conversion</button>
-        <button class="tab" data-tab="priceConversion">Price Conversion</button>
+        <button class="tab active" data-tab="instantCalculator">Calculator</button>
+        <button class="tab" data-tab="discount">Discount</button>
+        <button class="tab" data-tab="lbsToKg">Weight</button>
+        <button class="tab" data-tab="priceConversion">Price</button>
     </div>
-    <div id="discount" class="tab-content active">
+    <div id="instantCalculator" class="tab-content active">
+        <input id="calcInput" type="text" placeholder="Type your expression">
+        <div class="result-container">
+            <p id="calcResult"></p>
+            <button id="copyButton" class="copy-btn">Copy</button>
+        </div>
+    </div>
+    <div id="discount" class="tab-content">
         <input id="oldPrice" type="number" placeholder="Old Price ($)">
         <input id="newPrice" type="number" placeholder="New Price ($)">
         <button id="calculateDiscount">Calculate Discount</button>
@@ -33,6 +43,8 @@
         <button id="convertPrice">Convert to $/100g or $/100ml</button>
         <p id="resultPrice"></p>
     </div>
+    <script src="math.js"></script>
     <script src="popup.js"></script>
 </body>
+
 </html>

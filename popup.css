@@ -5,19 +5,20 @@ body {
     padding-top: 0px;
     background-color: #f4f4f4;
     display: flex;
-    flex-direction: column; 
-    align-items: center; 
+    flex-direction: column;
+    align-items: stretch;
 }
 
 .tabs {
     display: flex;
-    justify-content: space-around; 
+    flex-wrap: wrap;
+    justify-content: space-between;
     width: 100%;
     margin-bottom: 10px;
 }
 
 .tab {
-    flex: 1; 
+    flex: 1 1 0;
     padding: 5px;
     background-color: rgb(0, 100, 255);
     color: white;
@@ -25,6 +26,8 @@ body {
     cursor: pointer;
     text-align: center;
     border-radius: 3px;
+    margin: 0 2px;
+    box-sizing: border-box;
 }
 
 .tab.active {
@@ -33,7 +36,6 @@ body {
 
 .tab-content {
     display: none;
-    width: 100%; 
 }
 
 .tab-content.active {
@@ -41,36 +43,37 @@ body {
 }
 
 input {
-    width: 100%; 
+    width: 100%;
     padding: 8px;
     margin: 5px 0;
     border: 1px solid #ccc;
     border-radius: 3px;
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
+
 input[type=number] {
-    appearance: textfield;          
-    -webkit-appearance: none;       
+    appearance: textfield;
+    -webkit-appearance: none;
 }
 
 select {
-    width: 100%; 
+    width: 100%;
     padding: 7px;
     margin: 5px 0;
     border: 1px solid #ccc;
     border-radius: 3px;
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
 button {
-    width: 100%; 
-    padding: 8px; 
+    width: 100%;
+    padding: 8px;
     background-color: rgb(0, 200, 50);
     color: white;
     border: none;
@@ -89,4 +92,22 @@ p {
     margin-bottom: 0px;
     font-weight: bold;
     text-align: center;
+}
+
+.result-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0;
+}
+
+
+#calcResult {
+    text-align: left;
+    margin: 0;
+}
+
+.copy-btn {
+    width: auto;
+    padding: 5px 10px;
 }

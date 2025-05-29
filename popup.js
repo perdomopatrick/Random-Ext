@@ -18,15 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // prevent invalid characters
-    const restrictInput = (event) => {
-        if (['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete'].includes(event.key)) {
-            return; 
+    const restrictInput = (e) => {
+        if (['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete'].includes(e.key)) {
+            return;
         }
-        const validCharacters = /^\d+(\.\d{0,2})?$/; // only numbers with atmost 2 decimals
-        const value = event.target.value + event.key; 
+        const validCharacters = /^\d+(\.\d{0,2})?$/; // only numbers with at most 2 decimals
+        const value = e.target.value + e.key;
 
         if (!validCharacters.test(value)) {
-            event.preventDefault(); 
+            e.preventDefault();
         }
     };
 
@@ -43,8 +43,114 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById(id).addEventListener('keydown', restrictInput);
     });
 
+    // Instant Calculator functionality
+    const calcInput = document.getElementById('calcInput');
+    const calcResult = document.getElementById('calcResult');
+
+    calcInput.addEventListener('input', () => {
+        let expression = calcInput.value;
+
+        try {
+            if (expression.trim()) {
+                const bracketsExpr = parseBrackets(expression);
+                const result = math.evaluate(bracketsExpr);
+
+                if (typeof result === 'number') {
+                    const fracResult = math.fraction(result);
+                    const resultTxt = math.abs(result) < 1e-10 ? 0 : math.round(result * 1e10) / 1e10
+                    calcResult.innerText = `${resultTxt}`;
+
+                    if (fracResult.d != 1) {
+                        calcResult.innerText += ` (${fracResult.n}/${fracResult.d})`;
+                    }
+                } else {
+                    calcResult.innerText = '.';
+                }
+            } else {
+                calcResult.innerText = '..';
+            }
+        } catch {
+            calcResult.innerText = '...';
+        }
+    });
+
+    // Calculator - parse brackets functionality
+    function parseBrackets(expression) {
+        const stack = [];
+        const pairs = { '(': ')', '[': ']', '{': '}' };
+        const openingBrackets = Object.keys(pairs);
+        const closingBrackets = Object.values(pairs);
+
+        for (const ch of expression) {
+            if (openingBrackets.includes(ch)) {
+                stack.push(ch);
+            } else if (closingBrackets.includes(ch)) {
+                if (stack.length !== 0) {
+                    const lastOpen = stack[stack.length - 1];
+                    if (pairs[lastOpen] === ch) {
+                        stack.pop();
+                    }
+                }
+            }
+        }
+
+        while (stack.length > 0) {
+            expression += pairs[stack.pop()];
+        }
+        return expression.replace(/[\[\{]/g, '(').replace(/[\]\}]/g, ')');
+    }
+
+
+    // Calculator - auto close brackets select functionality
+    calcInput.addEventListener('keydown', (e) => {
+        const pairs = {
+            '(': ')',
+            '[': ']',
+            '{': '}'
+        };
+
+        if (pairs[e.key] && !e.ctrlKey) {
+            const start = calcInput.selectionStart;
+            const end = calcInput.selectionEnd;
+
+            if (start !== end) {
+                e.preventDefault();
+
+                const before = calcInput.value.slice(0, start);
+                const selected = calcInput.value.slice(start, end);
+                const after = calcInput.value.slice(end);
+
+                calcInput.value = before + e.key + selected + pairs[e.key] + after;
+
+                calcInput.selectionStart = start + open.length + selected.length + close.length;
+                calcInput.selectionEnd = calcInput.selectionStart;
+            }
+        }
+    });
+
+
+
+    // Calculator - copy to clipboard functionality
+    copyButton.addEventListener('click', () => {
+        const resultText = calcResult.innerText;
+        const endIndexBracket = resultText.indexOf(' (');
+        let textToCopy = resultText;
+        if (endIndexBracket !== -1) {
+            textToCopy = resultText.substring(0, endIndexBracket);
+        }
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            copyButton.innerText = 'Copied!';
+            setTimeout(() => {
+                copyButton.innerText = 'Copy';
+            }, 500);
+        }).catch(err => {
+            alert('Failed to copy: ', err);
+        });
+    });
+
+
     // Discount Calculator functionality
-    document.getElementById('calculateDiscount').addEventListener('click', function () {
+    document.getElementById('calculateDiscount').addEventListener('click', () => {
         const oldPrice = parseFloat(document.getElementById('oldPrice').value);
         const newPrice = parseFloat(document.getElementById('newPrice').value);
 
@@ -53,8 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     });
 
-    // Weight conversion functionality
-    document.getElementById('convertWeight').addEventListener('click', function () {
+    // Weight Conversion functionality
+    document.getElementById('convertWeight').addEventListener('click', () => {
         const weightInput = parseFloat(document.getElementById('weightInput').value);
         const unit = document.getElementById('unitSelect').value;
 
@@ -70,8 +176,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     });
 
-    // Price conversion to $/100g or $/100ml
-    document.getElementById('convertPrice').addEventListener('click', function () {
+    // Price Conversion to $/100g or $/100ml
+    document.getElementById('convertPrice').addEventListener('click', () => {
         const priceValue = parseFloat(document.getElementById('price').value);
         const weightOrVolumeValue = parseFloat(document.getElementById('weightOrVolume').value);
 
