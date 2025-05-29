@@ -57,14 +57,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (typeof result === 'number') {
                     const fracResult = math.fraction(result);
-                    const resultTxt = math.abs(result) < 1e-10 ? 0 : math.round(result * 1e10) / 1e10
-                    calcResult.innerText = `${resultTxt}`;
+                    // const resultTxt = math.abs(result) < 1e-15 ? 0 : math.round(result * 1e10) / 1e10; // sin(pi) = 1.2246467991473532e-16 
+                    calcResult.innerText = `${result}`;
 
                     if (fracResult.d != 1) {
                         calcResult.innerText += ` (${fracResult.n}/${fracResult.d})`;
                     }
+                } else if (typeof result === 'function') {
+                    calcResult.innerText = `supported`;
                 } else {
-                    calcResult.innerText = '.';
+                    calcResult.innerText = result;
                 }
             } else {
                 calcResult.innerText = '..';

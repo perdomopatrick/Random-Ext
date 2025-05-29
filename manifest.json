@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Groceries Extension",
+    "name": "Random Extension",
     "version": "1.1",
-    "description": "groceries calculator",
+    "description": "Random things",
     "permissions": [],
     "action": {
         "default_popup": "popup.html"
