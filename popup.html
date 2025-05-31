@@ -5,44 +5,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="popup.css">
-    <title>Unit Converter</title>
+    <title>Nice Title</title>
 </head>
 
 <body>
     <div class="tabs">
-        <button class="tab active" data-tab="instantCalculator">Calculator</button>
+        <button class="tab active" data-tab="controller">Speed</button>
+        <button class="tab" data-tab="instantCalculator">Calculator</button>
         <button class="tab" data-tab="discount">Discount</button>
-        <button class="tab" data-tab="lbsToKg">Weight</button>
         <button class="tab" data-tab="priceConversion">Price</button>
     </div>
-    <div id="instantCalculator" class="tab-content active">
-        <input id="calcInput" type="text" placeholder="Type your expression">
+
+    <div id="controller" class="tab-content active">
+        <div class="controller">
+            <input type="range" id="speedSlider" min="0" max="100" value="50" step="1">
+            <span id="speedDisplay">1.00x</span>
+        </div>
+        <button id="resetSpeed">Reset Speed to 1x</button>
+    </div>
+
+    <div id="instantCalculator" class="tab-content">
+        <input id="calcInput" type="text" autocomplete="off" placeholder="Type your expression">
         <div class="result-container">
             <p id="calcResult"></p>
             <button id="copyButton" class="copy-btn">Copy</button>
         </div>
     </div>
+
     <div id="discount" class="tab-content">
         <input id="oldPrice" type="number" placeholder="Old Price ($)">
         <input id="newPrice" type="number" placeholder="New Price ($)">
         <button id="calculateDiscount">Calculate Discount</button>
         <p id="resultDiscount"></p>
     </div>
-    <div id="lbsToKg" class="tab-content">
-        <input id="weightInput" type="number" placeholder="Enter weight">
-        <select id="unitSelect">
-            <option value="lbs">Lbs to Kg</option>
-            <option value="kg">Kg to Lbs</option>
-        </select>
-        <button id="convertWeight">Convert</button>
-        <p id="resultWeight"></p>
-    </div>
+
     <div id="priceConversion" class="tab-content">
         <input id="price" type="number" placeholder="Price ($)">
         <input id="weightOrVolume" type="number" placeholder="Weight (g) or Volume (ml)">
         <button id="convertPrice">Convert to $/100g or $/100ml</button>
         <p id="resultPrice"></p>
     </div>
+
     <script src="math.js"></script>
     <script src="popup.js"></script>
 </body>

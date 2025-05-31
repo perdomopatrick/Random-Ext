@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // default tab - Discount Calculator
     const tabs = document.querySelectorAll('.tab');
     const contents = document.querySelectorAll('.tab-content');
 
@@ -7,13 +6,21 @@ document.addEventListener('DOMContentLoaded', () => {
         tab.addEventListener('click', () => {
             const selectedTab = tab.getAttribute('data-tab');
 
-            // remove all active class 
+            // remove all active classes
             tabs.forEach(t => t.classList.remove('active'));
             contents.forEach(content => content.classList.remove('active'));
 
-            // active class to clicked
+            // add active class to clicked tab
             tab.classList.add('active');
             document.getElementById(selectedTab).classList.add('active');
+
+            if (selectedTab === 'controller') { // access storage only for speed tab
+                chrome.storage.local.get(['speed'], (result) => {
+                    const speed = result.speed || 1.0;
+                    slider.value = speed;
+                    setSpeed(speed);
+                });
+            }
         });
     });
 
@@ -34,18 +41,68 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputFields = [
         'oldPrice',
         'newPrice',
-        'weightInput',
         'price',
         'weightOrVolume'
     ];
 
+    // set event listeners
     inputFields.forEach(id => {
         document.getElementById(id).addEventListener('keydown', restrictInput);
+    });
+
+    // Speed controller functionality
+    const slider = document.getElementById('speedSlider');
+    const display = document.getElementById("speedDisplay");
+
+    const setSpeed = (value) => {
+        const speed = calculateSpeed(value);
+        display.textContent = `${speed.toFixed(2)}x`;
+        chrome.storage.local.set({ speed: value });
+
+        // speed up all videos on the active tab
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            chrome.scripting.executeScript({
+                target: { tabId: tabs[0].id },
+                args: [speed],
+                func: (speed) => {
+                    if (window.__speedIntervalId) clearInterval(window.__speedIntervalId);
+                    window.__speedIntervalId = setInterval(() => {
+                        document.querySelectorAll("video").forEach(video => {
+                            video.playbackRate = speed;
+                            video.defaultPlaybackRate = speed;
+                        });
+                    }, 200);
+                }
+            });
+        });
+    };
+
+    // Speed - exponential to linear to exponential (continuous)
+    const calculateSpeed = (x) => {
+        if (x < 25) { //  (x=0, y=0.1), (x=25, y=0.25)
+            return 0.1 * Math.pow(2.5, x / 25);
+        } else if (x <= 75) { // (x=50, y=1.0)
+            return 0.03 * x - 0.5;
+        } else { // (x=100, y=10)
+            return 1.75 * Math.pow(10 / 1.75, (x - 75) / 25);
+        }
+    };
+
+    // Speed - silder listener
+    slider.addEventListener('input', () => {
+        setSpeed(slider.value);
+    });
+
+    // Speed - reset
+    document.getElementById('resetSpeed').addEventListener('click', () => {
+        slider.value = 50;
+        setSpeed(50);
     });
 
     // Instant Calculator functionality
     const calcInput = document.getElementById('calcInput');
     const calcResult = document.getElementById('calcResult');
+    const copyButton = document.getElementById('copyButton');
 
     calcInput.addEventListener('input', () => {
         let expression = calcInput.value;
@@ -57,7 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (typeof result === 'number') {
                     const fracResult = math.fraction(result);
-                    // const resultTxt = math.abs(result) < 1e-15 ? 0 : math.round(result * 1e10) / 1e10; // sin(pi) = 1.2246467991473532e-16 
                     calcResult.innerText = `${result}`;
 
                     if (fracResult.d != 1) {
@@ -95,13 +151,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-
         while (stack.length > 0) {
             expression += pairs[stack.pop()];
         }
         return expression.replace(/[\[\{]/g, '(').replace(/[\]\}]/g, ')');
     }
-
 
     // Calculator - auto close brackets select functionality
     calcInput.addEventListener('keydown', (e) => {
@@ -124,13 +178,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 calcInput.value = before + e.key + selected + pairs[e.key] + after;
 
-                calcInput.selectionStart = start + open.length + selected.length + close.length;
+                calcInput.selectionStart = start + e.key.length + selected.length + pairs[e.key].length;
                 calcInput.selectionEnd = calcInput.selectionStart;
             }
         }
     });
-
-
 
     // Calculator - copy to clipboard functionality
     copyButton.addEventListener('click', () => {
@@ -150,7 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-
     // Discount Calculator functionality
     document.getElementById('calculateDiscount').addEventListener('click', () => {
         const oldPrice = parseFloat(document.getElementById('oldPrice').value);
@@ -158,24 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const discount = ((oldPrice - newPrice) / oldPrice) * 100;
         document.getElementById('resultDiscount').innerText = `Discount: ${discount.toFixed(2)}%`;
-
-    });
-
-    // Weight Conversion functionality
-    document.getElementById('convertWeight').addEventListener('click', () => {
-        const weightInput = parseFloat(document.getElementById('weightInput').value);
-        const unit = document.getElementById('unitSelect').value;
-
-        let result;
-
-        if (unit === 'lbs') {
-            result = weightInput * 0.453592; // lbs to kg
-            document.getElementById('resultWeight').innerText = `${weightInput} lbs = ${result.toFixed(2)} kg`;
-        } else {
-            result = weightInput / 0.453592; // kg to lbs
-            document.getElementById('resultWeight').innerText = `${weightInput} kg = ${result.toFixed(2)} lbs`;
-        }
-
     });
 
     // Price Conversion to $/100g or $/100ml
@@ -185,6 +218,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const pricePer100 = (priceValue / weightOrVolumeValue) * 100;
         document.getElementById('resultPrice').innerText = `$${pricePer100.toFixed(2)} per 100g/ml`;
-
     });
 });
