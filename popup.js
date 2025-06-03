@@ -1,4 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+    // get and use speed from memory 
+    function setSpeedFromMem() {
+        chrome.storage.local.get(['speed'], (result) => {
+            const speed = result.speed || 1.0;
+            slider.value = speed;
+            setSpeed(speed);
+        });
+    }
+    setSpeedFromMem(); // when ext is opened
+
+    // Tabs
     const tabs = document.querySelectorAll('.tab');
     const contents = document.querySelectorAll('.tab-content');
 
@@ -13,20 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // add active class to clicked tab
             tab.classList.add('active');
             document.getElementById(selectedTab).classList.add('active');
-
-            if (selectedTab === 'controller') { // access storage only for speed tab
-                chrome.storage.local.get(['speed'], (result) => {
-                    const speed = result.speed || 1.0;
-                    slider.value = speed;
-                    setSpeed(speed);
-                });
-            }
         });
     });
 
-    // prevent invalid characters
+    // input - prevent invalid characters
     const restrictInput = (e) => {
-        if (['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete'].includes(e.key)) {
+        if (e.ctrlKey || e.metaKey || ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab', 'Enter'].includes(e.key)) {
             return;
         }
         const validCharacters = /^\d+(\.\d{0,2})?$/; // only numbers with at most 2 decimals
@@ -37,16 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // keydown event listener
-    const inputFields = [
-        'oldPrice',
-        'newPrice',
-        'price',
-        'weightOrVolume'
-    ];
-
-    // set event listeners
-    inputFields.forEach(id => {
+    // input - set event listeners
+    ['oldPrice', 'newPrice', 'price', 'weightOrVolume'].forEach(id => {
         document.getElementById(id).addEventListener('keydown', restrictInput);
     });
 
@@ -54,37 +50,79 @@ document.addEventListener('DOMContentLoaded', () => {
     const slider = document.getElementById('speedSlider');
     const display = document.getElementById("speedDisplay");
 
+    // Speed - set speed of tab
     const setSpeed = (value) => {
         const speed = calculateSpeed(value);
         display.textContent = `${speed.toFixed(2)}x`;
         chrome.storage.local.set({ speed: value });
 
-        // speed up all videos on the active tab
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            chrome.scripting.executeScript({
-                target: { tabId: tabs[0].id },
-                args: [speed],
-                func: (speed) => {
-                    if (window.__speedIntervalId) clearInterval(window.__speedIntervalId);
-                    window.__speedIntervalId = setInterval(() => {
-                        document.querySelectorAll("video").forEach(video => {
-                            video.playbackRate = speed;
-                            video.defaultPlaybackRate = speed;
-                        });
-                    }, 200);
-                }
-            });
-        });
+        runScriptOnActiveTab(setVideoSpeed, [speed, true])
     };
 
-    // Speed - exponential to linear to exponential (continuous)
+    // Speed - stop speed loop
+    function clearSpeedModifications() {
+        slider.value = 50;
+        display.textContent = `1.00x`;
+        chrome.storage.local.set({ speed: 50 });
+
+        runScriptOnActiveTab(setVideoSpeed, [1, false])
+    }
+
+
+    // run on the active tab
+    function runScriptOnActiveTab(func, args = []) {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            const tab = tabs[0];
+            if (!tab || tab.url.startsWith("chrome://")) return;
+
+            chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                func,
+                args
+            });
+        });
+    }
+
+    function setVideoSpeed(speed, enforce) {
+        if (window.__speedIntervalId) {
+            clearInterval(window.__speedIntervalId);
+            window.__speedIntervalId = null;
+        }
+        if (!enforce) {
+            document.querySelectorAll("video").forEach(video => {
+                video.playbackRate = 1;
+                video.defaultPlaybackRate = 1;
+            });
+        } else {
+            window.__speedIntervalId = setInterval(() => {
+                document.querySelectorAll("video").forEach(video => {
+                    video.playbackRate = speed;
+                    video.defaultPlaybackRate = speed;
+                });
+            }, 200);
+        }
+    }
+
+
+    // Speed - percent to speed - exponential to linear to exponential (continuous) 
     const calculateSpeed = (x) => {
         if (x < 25) { //  (x=0, y=0.1), (x=25, y=0.25)
             return 0.1 * Math.pow(2.5, x / 25);
-        } else if (x <= 75) { // (x=50, y=1.0)
+        } else if (x <= 75) { // (x=50, y=1.0), (x=75, y=1.75)
             return 0.03 * x - 0.5;
         } else { // (x=100, y=10)
             return 1.75 * Math.pow(10 / 1.75, (x - 75) / 25);
+        }
+    };
+
+    // Speed - speed to percent
+    const calculateSlider = (speed) => {
+        if (speed <= 0.25) {
+            return 25 * (Math.log(speed / 0.1) / Math.log(2.5));
+        } else if (speed <= 1.75) {
+            return (speed + 0.5) / 0.03;
+        } else {
+            return 75 + 25 * (Math.log(speed / 1.75) / Math.log(10 / 1.75));
         }
     };
 
@@ -93,11 +131,18 @@ document.addEventListener('DOMContentLoaded', () => {
         setSpeed(slider.value);
     });
 
-    // Speed - reset
-    document.getElementById('resetSpeed').addEventListener('click', () => {
-        slider.value = 50;
-        setSpeed(50);
+    // Speed - quick select
+    ['speed0.5x', 'speed1x', 'speed2x'].forEach(id => {
+        document.getElementById(id).addEventListener('click', function () {
+            const speed_value = parseFloat(this.innerHTML);
+            const speed_percent = calculateSlider(speed_value);
+            slider.value = speed_percent;
+            setSpeed(speed_percent);
+        });
     });
+
+    // Speed - turn off
+    document.getElementById('turnOffSpeed').addEventListener('click', clearSpeedModifications);
 
     // Instant Calculator functionality
     const calcInput = document.getElementById('calcInput');
@@ -198,7 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 copyButton.innerText = 'Copy';
             }, 500);
         }).catch(err => {
-            alert('Failed to copy: ', err);
+            console.error('Failed to copy:', err);
+            alert('Failed to copy: ', err.message);
         });
     });
 
@@ -211,6 +257,21 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('resultDiscount').innerText = `Discount: ${discount.toFixed(2)}%`;
     });
 
+    // Discount - if Enter
+    document.getElementById("oldPrice").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            document.getElementById("newPrice").focus();
+        }
+    });
+
+    document.getElementById("newPrice").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            document.getElementById("calculateDiscount").click();
+        }
+    });
+
     // Price Conversion to $/100g or $/100ml
     document.getElementById('convertPrice').addEventListener('click', () => {
         const priceValue = parseFloat(document.getElementById('price').value);
@@ -218,5 +279,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const pricePer100 = (priceValue / weightOrVolumeValue) * 100;
         document.getElementById('resultPrice').innerText = `$${pricePer100.toFixed(2)} per 100g/ml`;
+    });
+
+    // Price - if Enter
+    document.getElementById("price").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            document.getElementById("weightOrVolume").focus();
+        }
+    });
+
+    document.getElementById("weightOrVolume").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            document.getElementById("convertPrice").click();
+        }
     });
 });

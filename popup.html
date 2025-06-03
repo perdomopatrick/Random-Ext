@@ -21,7 +21,12 @@
             <input type="range" id="speedSlider" min="0" max="100" value="50" step="1">
             <span id="speedDisplay">1.00x</span>
         </div>
-        <button id="resetSpeed">Reset Speed to 1x</button>
+        <div class="controller">
+            <button id="speed0.5x">0.50x</button>
+            <button id="speed1x">1.00x</button>
+            <button id="speed2x">2.00x</button>
+            <button id="turnOffSpeed">OFF</button>
+        </div>
     </div>
 
     <div id="instantCalculator" class="tab-content">
@@ -33,16 +38,20 @@
     </div>
 
     <div id="discount" class="tab-content">
-        <input id="oldPrice" type="number" placeholder="Old Price ($)">
-        <input id="newPrice" type="number" placeholder="New Price ($)">
-        <button id="calculateDiscount">Calculate Discount</button>
+        <div class="controller">
+            <input id="oldPrice" type="number" placeholder="Old ($)">
+            <input id="newPrice" type="number" placeholder="New ($)">
+            <button id="calculateDiscount">Calculate</button>
+        </div>
         <p id="resultDiscount"></p>
     </div>
 
     <div id="priceConversion" class="tab-content">
-        <input id="price" type="number" placeholder="Price ($)">
-        <input id="weightOrVolume" type="number" placeholder="Weight (g) or Volume (ml)">
-        <button id="convertPrice">Convert to $/100g or $/100ml</button>
+        <div class="controller">
+            <input id="price" type="number" placeholder="Price ($)">
+            <input id="weightOrVolume" type="number" placeholder="(g) or (ml)">
+            <button id="convertPrice">Convert</button>
+        </div>
         <p id="resultPrice"></p>
     </div>
 

@@ -141,3 +141,10 @@ p {
     text-align: right;
     font-weight: bold;
 }
+
+#turnOffSpeed {
+    width: 50px;
+    background: red;
+    text-align: right;
+    font-weight: bold;
+}
