@@ -1,7 +1,9 @@
 # Random Extension
-### Playback Speed Controller
-- Adjust video speed from **0.1× to 10×** using a logarithmic slider.
-- Includes a **Reset** button to return to 1× speed.
+## Tabs:
+### Video Controller (Speed and Volume)
+- Adjust video speed from **0.1× to 10×** using a custom slider (exp to linear to exp).
+- Adjust video volume from **0% to 10000%** using a custom slider (linear to exp).
+- Includes **OFF** buttons to return to 1× speed or 100% volume.
 
 ### Instant Calculator
 - Supports mathematical expressions using `math.js` (version  14.5.2).

@@ -18,7 +18,7 @@
 
     <div id="controller" class="tab-content active">
         <div class="controller">
-            <input type="range" id="speedSlider" min="0" max="100" value="50" step="1">
+            <input class="slider" type="range" id="speedSlider" min="0" max="100" value="50" step="1">
             <span id="speedDisplay">1.00x</span>
         </div>
         <div class="controller">
@@ -27,6 +27,18 @@
             <button id="speed2x">2.00x</button>
             <button id="turnOffSpeed">OFF</button>
         </div>
+        <h4>Volume Booster</h4>
+        <div class="controller">
+            <input class="slider" type="range" id="boostSlider" min="0" max="100" step="0.1" value="15">
+            <span id="boostValue">100%</span>
+        </div>
+        <div class="controller">
+            <button id="boost50%">50%</button>
+            <button id="boost100%">100%</button>
+            <button id="boost200%">200%</button>
+            <button id="turnOffBoost">OFF</button>
+        </div> 
+               
     </div>
 
     <div id="instantCalculator" class="tab-content">

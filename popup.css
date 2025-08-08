@@ -119,7 +119,7 @@ p {
     margin-bottom: 3px;
 }
 
-#speedSlider {
+.slider {
     flex-grow: 1;
     appearance: none;
     height: 6px;
@@ -128,7 +128,7 @@ p {
     outline: none;
 }
 
-#speedSlider::-webkit-slider-thumb {
+.slider::-webkit-slider-thumb {
     width: 14px;
     height: 14px;
     background: #007bff;
@@ -136,13 +136,13 @@ p {
     cursor: pointer;
 }
 
-#speedDisplay {
+span {
     width: 25px;
     text-align: right;
     font-weight: bold;
 }
 
-#turnOffSpeed {
+#turnOffSpeed, #turnOffBoost {
     width: 50px;
     background: red;
     text-align: right;
