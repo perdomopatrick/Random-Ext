@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Speed - quick select
-  ["speed0.5x", "speed1x", "speed2x"].forEach((id) => {
+  ["speed-0_5x", "speed-1x", "speed-2x"].forEach((id) => {
     document.getElementById(id).addEventListener("click", function () {
       const speed_value = parseFloat(this.innerHTML);
       console.log(parseFloat(this.innerHTML));
@@ -250,7 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Boost - quick select
-  ["boost50%", "boost100%", "boost200%"].forEach((id) => {
+  ["boost50", "boost100", "boost200"].forEach((id) => {
     document.getElementById(id).addEventListener("click", function () {
       const boost_value = parseFloat(this.innerHTML) / 100;
       const boost_percent = calculateBoostSlider(boost_value);
