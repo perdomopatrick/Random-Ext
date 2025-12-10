@@ -8,9 +8,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     chrome.storage.local.get(["boost"], (result) => {
-      const boost = result.boost || 1.0;
-      boostSlider.value = boost;
-      setVolume(boost);
+      const boost = result.boost || 15;
+      if (calculateBoost(boost) !== 1) {
+        boostSlider.value = boost;
+        setVolume(boost);
+      }
     });
   }
   setValuesFromMem(); // when ext is opened
@@ -152,9 +154,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Speed - stop speed loop
   function clearSpeedModifications() {
-    volumeSlider.value = 50;
+	const volume = calculateSpeedSlider(1);
+    volumeSlider.value = volume;
     volumeDisplay.textContent = `1.00x`;
-    chrome.storage.local.set({ speed: 50 });
+    chrome.storage.local.set({ speed: volume });
 
     runScriptOnActiveTab(setVideoSpeed, [1, false]);
   }
@@ -269,9 +272,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
+	const boost = calculateBoostSlider(1);
     boostDisplay.textContent = `100%`;
-    boostSlider.value = 15; // value for gain = 1 in your mapping
-    chrome.storage.local.set({ boost: 15 });
+    boostSlider.value = boost;
+    chrome.storage.local.set({ boost: boost });
 
     // update the active tab
     runScriptOnActiveTab(setVideoVolumeBoost, [1]);
