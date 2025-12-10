@@ -1,91 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="popup.css" />
-    <title>Nice Title</title>
-  </head>
 
-  <body>
-    <div class="tabs">
-      <button class="tab active" data-tab="controller">Video</button>
-      <button class="tab" data-tab="instantCalculator">Calculator</button>
-      <button class="tab" data-tab="discount">Discount</button>
-      <button class="tab" data-tab="priceConversion">Price</button>
-    </div>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="popup.css" />
+	<title>Nice Title</title>
+</head>
 
-    <div id="controller" class="tab-content active">
-      <div class="controller">
-        <input
-          class="slider"
-          type="range"
-          id="speedSlider"
-          min="0"
-          max="100"
-          value="50"
-          step="1"
-        />
-        <span id="speedDisplay">1.00x</span>
-      </div>
-      <div class="controller">
-        <button id="speed-0_5x">0.50x</button>
-        <button id="speed-1x">1.00x</button>
-        <button id="speed-2x">2.00x</button>
-        <button class="btn-off" id="turnOffSpeed">OFF</button>
-      </div>
-      <div class="controller">
-        <input
-          class="slider"
-          type="range"
-          id="boostSlider"
-          min="0"
-          max="100"
-          step="0.1"
-          value="15"
-        />
-        <span id="boostValue">100%</span>
-      </div>
-      <div class="controller">
-        <button id="boost50">50%</button>
-        <button id="boost100">100%</button>
-        <button id="boost200">200%</button>
-        <button class="btn-off" id="turnOffBoost">OFF</button>
-      </div>
-    </div>
+<body>
+	<div class="tabs">
+		<button class="tab active" data-tab="controller">Video</button>
+		<button class="tab" data-tab="instantCalculator">Calculator</button>
+		<button class="tab" data-tab="tally-counter">Counter</button>
+		<button class="tab" data-tab="priceConversion">Price</button>
+	</div>
 
-    <div id="instantCalculator" class="tab-content">
-      <input
-        id="calcInput"
-        type="text"
-        autocomplete="off"
-        placeholder="Type your expression"
-      />
-      <div class="result-container">
-        <p id="calcResult"></p>
-        <button id="copyButton" class="copy-btn">Copy</button>
-      </div>
-    </div>
+	<div id="controller" class="tab-content active">
+		<div class="controller">
+			<input class="slider" type="range" id="speedSlider" min="0" max="100" value="50" step="1" />
+			<span id="speedDisplay">1.00x</span>
+		</div>
+		<div class="controller">
+			<button id="speed-0_5x">0.50x</button>
+			<button id="speed-1x">1.00x</button>
+			<button id="speed-2x">2.00x</button>
+			<button class="btn-off" id="turnOffSpeed">OFF</button>
+		</div>
+		<div class="controller">
+			<input class="slider" type="range" id="boostSlider" min="0" max="100" step="0.1" value="15" />
+			<span id="boostValue">100%</span>
+		</div>
+		<div class="controller">
+			<button id="boost50">50%</button>
+			<button id="boost100">100%</button>
+			<button id="boost200">200%</button>
+			<button class="btn-off" id="turnOffBoost">OFF</button>
+		</div>
+	</div>
 
-    <div id="discount" class="tab-content">
-      <div class="controller">
-        <input id="oldPrice" type="number" placeholder="Old ($)" />
-        <input id="newPrice" type="number" placeholder="New ($)" />
-        <button id="calculateDiscount">Calculate</button>
-      </div>
-      <p id="resultDiscount"></p>
-    </div>
+	<div id="instantCalculator" class="tab-content">
+		<input id="calcInput" type="text" autocomplete="off" placeholder="Type your expression" />
+		<div class="result-container">
+			<p id="calcResult"></p>
+			<button id="copyButton" class="copy-btn">Copy</button>
+		</div>
+	</div>
 
-    <div id="priceConversion" class="tab-content">
-      <div class="controller">
-        <input id="price" type="number" placeholder="Price ($)" />
-        <input id="weightOrVolume" type="number" placeholder="(g) or (ml)" />
-        <button id="convertPrice">Convert</button>
-      </div>
-      <p id="resultPrice"></p>
-    </div>
+	<div id="tally-counter" class="tab-content">
+		<h1 id="counter" style="text-align: center;">0</h1>
+		<div class="controller">
+			<button id="add">+</button>
+			<button id="reset">Reset</button>
+		</div>
 
-    <script src="math.js"></script>
-    <script src="popup.js"></script>
-  </body>
+	</div>
+
+	<div id="priceConversion" class="tab-content">
+		<div class="controller">
+			<input id="price" type="number" placeholder="Price ($)" />
+			<input id="weightOrVolume" type="number" placeholder="(g) or (ml)" />
+			<button id="convertPrice">Convert</button>
+		</div>
+		<p id="resultPrice"></p>
+		<div class="controller">
+			<input id="oldPrice" type="number" placeholder="Old ($)" />
+			<input id="newPrice" type="number" placeholder="New ($)" />
+			<button id="calculateDiscount">Calculate</button>
+		</div>
+		<p id="resultDiscount"></p>
+	</div>
+
+	<script src="math.js"></script>
+	<script src="popup.js"></script>
+</body>
+
 </html>
